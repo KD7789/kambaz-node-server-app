@@ -21,7 +21,6 @@ mongoose.connect(CONNECTION_STRING);
 
 const app = express();
 
-/* -------------------- CORS -------------------- */
 app.use(
   cors({
     credentials: true,
