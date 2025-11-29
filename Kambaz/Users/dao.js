@@ -3,7 +3,10 @@ import model from "./model.js";
 
 export default function UsersDao() {
 
-  const createUser = (user) => {} 
+  const createUser = (user) => {
+    const newUser = { ...user, _id: uuidv4() };
+    return model.create(newUser);
+  }   
 
   const findAllUsers = () => model.find();
 
@@ -22,9 +25,9 @@ export default function UsersDao() {
     });
   };  
 
-  const updateUser = (userId, user) =>  model.updateOne({ _id: userId }, { $set: user });
+  const updateUser = (userId, user) => model.updateOne({ _id: userId }, { $set: user });
 
-  const deleteUser = (userId) => model.deleteOne({ _id: userId });
+  const deleteUser = (userId) => model.findByIdAndDelete( userId );
 
   return { createUser, findAllUsers, findUserById, findUsersByRole, findUsersByPartialName,
     findUserByUsername, findUserByCredentials, updateUser, deleteUser };
