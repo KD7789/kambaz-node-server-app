@@ -10,6 +10,7 @@ import ModulesRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentsRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
 import UserRoutes from "./Kambaz/Users/routes.js";
+import QuizRoutes from "./Kambaz/Quizzes/routes.js";
 
 import Hello from "./Hello.js";
 import Lab5 from "./Lab5/index.js";
@@ -58,6 +59,7 @@ app.use(express.json());
 UserRoutes(app, db);
 CourseRoutes(app, db);
 ModulesRoutes(app, db);
+QuizRoutes(app, db);
 AssignmentsRoutes(app, db);
 EnrollmentsRoutes(app, db);
 
