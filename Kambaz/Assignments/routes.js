@@ -7,14 +7,22 @@ export default function AssignmentsRoutes(app, db) {
   const createAssignment = async (req, res) => {
     try {
       const { courseId } = req.params;
+  
       const assignment = { ...req.body, course: courseId };
+  
+      // auto-generate _id if not provided
+      if (!assignment._id) {
+        assignment._id = "A" + Math.floor(100000 + Math.random() * 900000);
+      }
+  
       const newAssignment = await dao.createAssignment(assignment);
       res.json(newAssignment);
+  
     } catch (error) {
       console.error(error);
       res.sendStatus(500);
     }
-  };
+  };  
 
   // FIND ALL FOR COURSE
   const findAssignmentsForCourse = async (req, res) => {
