@@ -45,8 +45,10 @@ export default function QuizzesDao(db) {
   
 
   function updateQuiz(quizId, quiz) {
-    return model.updateOne({ _id: quizId }, { $set: quiz });
+    const { _id, ...rest } = quiz;   // remove _id
+    return model.updateOne({ _id: quizId }, { $set: rest });
   }
+  
 
   function deleteQuiz(quizId) {
     return model.deleteOne({ _id: quizId });
