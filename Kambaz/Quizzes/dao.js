@@ -30,6 +30,18 @@ export default function QuizzesDao(db) {
       accessCode: "", // default no access code
     });
   }
+
+  async function copyQuiz(quizId) {
+    const quiz = await model.findById(quizId).lean();
+    delete quiz._id;
+  
+    quiz.title = quiz.title + " (Copy)";
+    quiz.published = false;
+    quiz.availableFrom = null;
+    quiz.availableUntil = null;
+  
+    return model.create(quiz);
+  }  
   
 
   function updateQuiz(quizId, quiz) {
@@ -135,6 +147,7 @@ export default function QuizzesDao(db) {
     deleteQuiz,
     saveQuestions,
     addAttempt,
+    copyQuiz,
     findLastAttemptForStudent,
   };
 }

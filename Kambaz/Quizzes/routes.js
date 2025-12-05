@@ -42,6 +42,27 @@ export default function QuizRoutes(app, db) {
     res.json(status);
   });
 
+  app.post("/api/quizzes/:quizId/copy", async (req, res) => {
+    const { quizId } = req.params;
+    const quiz = await quizzesDao.findQuizById(quizId);
+  
+    if (!quiz) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+  
+    // Clone quiz (deep copy questions)
+    const newQuiz = await quizzesDao.createQuiz({
+      ...quiz,
+      _id: undefined,
+      title: quiz.title + " (Copy)",
+      published: false,
+      availableFrom: null,
+      availableUntil: null,
+    });
+  
+    res.json(newQuiz);
+  });  
+
   // -------------------------------------------
   // UPDATED ATTEMPT ROUTE WITH LOGGING
   // -------------------------------------------
