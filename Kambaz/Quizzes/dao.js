@@ -18,8 +18,19 @@ export default function QuizzesDao(db) {
       published: false,
       shuffleAnswers: true,
       attempts: [],
+      questions: [],
+  
+      // ADD THESE DEFAULTS
+      multipleAttempts: false,
+      howManyAttempts: 1,
+  
+      availableFrom: null,
+      availableUntil: null,
+  
+      accessCode: "", // default no access code
     });
   }
+  
 
   function updateQuiz(quizId, quiz) {
     return model.updateOne({ _id: quizId }, { $set: quiz });
