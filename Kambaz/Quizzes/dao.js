@@ -16,6 +16,8 @@ export default function QuizzesDao(db) {
       course: courseId,
       title: "New Quiz",
       published: false,
+      shuffleAnswers: true,
+      attempts: [],
     });
   }
 
@@ -38,6 +40,9 @@ export default function QuizzesDao(db) {
     );
   }
 
+  /* -------------------------------------------------
+     Add Attempt with proper validation
+  --------------------------------------------------- */
   async function addAttempt(quizId, attempt) {
     const quiz = await model.findById(quizId).lean();
     if (!quiz) return null;
@@ -63,28 +68,32 @@ export default function QuizzesDao(db) {
     );
   }
 
-  // Simple scoring logic
+  /* -------------------------------------------------
+     Scoring Logic
+  --------------------------------------------------- */
   function computeScore(quiz, answers) {
     let score = 0;
 
-    for (const q of quiz.questions) {
+    for (const q of quiz.questions || []) {
       const studentAns = answers.find((a) => a.questionId === q._id);
       if (!studentAns) continue;
 
       if (q.type === "MCQ") {
-        const choice = q.choices.find((c) => c._id === studentAns.answerText);
+        const choice = q.choices?.find((c) => c._id === studentAns.answerText);
         if (choice?.isCorrect) score += q.points;
       }
 
       if (q.type === "TRUE_FALSE") {
-        const isCorrect =
-          String(q.correctBoolean) === String(studentAns.answerText);
-        if (isCorrect) score += q.points;
+        if (String(q.correctBoolean) === String(studentAns.answerText)) {
+          score += q.points;
+        }
       }
 
       if (q.type === "FILL_IN_BLANK") {
-        const matches = q.acceptableAnswers.some(
-          (ans) => ans.toLowerCase().trim() === studentAns.answerText.toLowerCase().trim()
+        const matches = q.acceptableAnswers?.some(
+          (ans) =>
+            ans.toLowerCase().trim() ===
+            studentAns.answerText.toLowerCase().trim()
         );
         if (matches) score += q.points;
       }
@@ -93,6 +102,9 @@ export default function QuizzesDao(db) {
     return score;
   }
 
+  /* -------------------------------------------------
+     Find last attempt
+  --------------------------------------------------- */
   function findLastAttemptForStudent(quizId, studentId) {
     return model.aggregate([
       { $match: { _id: quizId } },

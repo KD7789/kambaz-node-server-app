@@ -17,11 +17,15 @@ import Lab5 from "./Lab5/index.js";
 
 import db from "./Kambaz/Database/index.js";
 
-const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
+/* -------------------- DB Connection -------------------- */
+const CONNECTION_STRING =
+  process.env.DATABASE_CONNECTION_STRING ||
+  "mongodb://127.0.0.1:27017/kambaz";
 mongoose.connect(CONNECTION_STRING);
 
 const app = express();
 
+/* -------------------- CORS (MUST BE FIRST) -------------------- */
 app.use(
   cors({
     credentials: true,
@@ -29,7 +33,10 @@ app.use(
   })
 );
 
-/* -------------------- Sessions -------------------- */
+/* -------------------- JSON PARSING (BEFORE SESSION) -------------------- */
+app.use(express.json());
+
+/* -------------------- SESSION (AFTER CORS + JSON) -------------------- */
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
@@ -40,20 +47,16 @@ const sessionOptions = {
   },
 };
 
-// Production settings for Render / Heroku
 if (process.env.SERVER_ENV === "production") {
-  app.set("trust proxy", 1); // REQUIRED for Render
+  app.set("trust proxy", 1);
 
   sessionOptions.cookie = {
-    secure: true,         // forces HTTPS
-    sameSite: "none",     // allows cross-site cookies
+    secure: true,
+    sameSite: "none",
   };
 }
 
 app.use(session(sessionOptions));
-
-/* -------------------- Middleware -------------------- */
-app.use(express.json());
 
 /* -------------------- Routes -------------------- */
 UserRoutes(app, db);

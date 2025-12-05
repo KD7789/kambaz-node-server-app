@@ -20,14 +20,8 @@ const questionSchema = new mongoose.Schema(
     title: String,
     points: { type: Number, default: 1 },
     text: String, // WYSIWYG HTML
-
-    // MCQ
     choices: [choiceSchema],
-
-    // TRUE/FALSE
     correctBoolean: Boolean,
-
-    // FILL IN BLANK
     acceptableAnswers: [String],
   },
   { _id: false }
@@ -58,20 +52,19 @@ const quizSchema = new mongoose.Schema(
     _id: String,
     course: { type: String, ref: "CourseModel" },
 
-    // Basic metadata
     title: { type: String, default: "New Quiz" },
     description: String,
 
-    // Publish state
     published: { type: Boolean, default: false },
 
-    // Quiz settings
     quizType: {
       type: String,
       enum: ["GRADED_QUIZ", "PRACTICE_QUIZ", "GRADED_SURVEY", "UNGRADED_SURVEY"],
       default: "GRADED_QUIZ",
     },
+
     points: { type: Number, default: 0 },
+
     assignmentGroup: {
       type: String,
       enum: ["QUIZZES", "EXAMS", "ASSIGNMENTS", "PROJECT"],
@@ -80,8 +73,10 @@ const quizSchema = new mongoose.Schema(
 
     shuffleAnswers: { type: Boolean, default: true },
     timeLimit: { type: Number, default: 20 },
+
     multipleAttempts: { type: Boolean, default: false },
     howManyAttempts: { type: Number, default: 1 },
+
     showCorrectAnswers: { type: String, default: "IMMEDIATELY" },
     accessCode: { type: String, default: "" },
     oneQuestionAtATime: { type: Boolean, default: true },
@@ -93,7 +88,9 @@ const quizSchema = new mongoose.Schema(
     dueDate: Date,
 
     questions: [questionSchema],
-    attempts: [attemptSchema],
+
+    // REQUIRED FIX
+    attempts: { type: [attemptSchema], default: [] },
   },
   { collection: "quizzes" }
 );
