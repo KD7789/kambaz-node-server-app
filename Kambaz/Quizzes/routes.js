@@ -152,15 +152,22 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
   // -------------------------------------------
   // Get last attempt of current student
   // -------------------------------------------
-  app.get("/api/quizzes/:quizId/attempts/me", async (req, res) => {
-    const currentUser = req.session["currentUser"];
-    if (!currentUser) return res.sendStatus(401);
+  // Get last attempt of current student
+app.get("/api/quizzes/:quizId/attempts/me", async (req, res) => {
+  const currentUser = req.session["currentUser"];
+  if (!currentUser) return res.sendStatus(401);
 
-    const result = await dao.findLastAttemptForStudent(
-      req.params.quizId,
-      currentUser._id
-    );
+  const result = await dao.findLastAttemptForStudent(
+    req.params.quizId,
+    currentUser._id
+  );
 
-    res.json(result[0]?.attempt || null);
-  });
+  if (!result || result.length === 0) {
+    return res.json(null);
+  }
+
+  // DAO already returns the attempt directly
+  return res.json(result[0]);
+});
+
 }

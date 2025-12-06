@@ -137,9 +137,9 @@ export default function QuizzesDao(db) {
       { $match: { "attempts.student": studentId } },
       { $sort: { "attempts.attemptNumber": -1 } },
       { $limit: 1 },
-      { $project: { _id: 0, attempt: "$attempts" } },
+      { $replaceRoot: { newRoot: "$attempts" } },  // <-- IMPORTANT FIX
     ]);
-  }
+  }  
 
   return {
     findQuizzesForCourse,
