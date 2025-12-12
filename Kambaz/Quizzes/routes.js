@@ -3,37 +3,31 @@ import QuizzesDao from "./dao.js";
 export default function QuizRoutes(app, db) {
   const dao = QuizzesDao(db);
 
-  // List quizzes for a course
   app.get("/api/courses/:courseId/quizzes", async (req, res) => {
     const quizzes = await dao.findQuizzesForCourse(req.params.courseId);
     res.json(quizzes);
   });
 
-  // Create quiz
   app.post("/api/courses/:courseId/quizzes", async (req, res) => {
     const quiz = await dao.createQuiz(req.params.courseId);
     res.json(quiz);
   });
 
-  // Get quiz
   app.get("/api/quizzes/:quizId", async (req, res) => {
     const quiz = await dao.findQuizById(req.params.quizId);
     res.json(quiz);
   });
 
-  // Update quiz
   app.put("/api/quizzes/:quizId", async (req, res) => {
     const status = await dao.updateQuiz(req.params.quizId, req.body);
     res.json(status);
   });
 
-  // Delete quiz
   app.delete("/api/quizzes/:quizId", async (req, res) => {
     const status = await dao.deleteQuiz(req.params.quizId);
     res.json(status);
   });
 
-  // Save questions
   app.put("/api/quizzes/:quizId/questions", async (req, res) => {
     const status = await dao.saveQuestions(
       req.params.quizId,
@@ -41,8 +35,6 @@ export default function QuizRoutes(app, db) {
     );
     res.json(status);
   });
-
-  // Quizzes/routes.js
 
 app.post("/api/quizzes/:quizId/copy", async (req, res) => {
   const { quizId } = req.params;
@@ -55,9 +47,6 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
   }
 });
 
-  // -------------------------------------------
-  // UPDATED ATTEMPT ROUTE WITH LOGGING
-  // -------------------------------------------
   app.post("/api/quizzes/:quizId/attempts", async (req, res) => {
     console.log("\n==== QUIZ ATTEMPT START ====");
     console.log("Incoming Body:", req.body);
@@ -84,7 +73,6 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
 
     const now = new Date();
 
-    // --- Availability checks ---
     if (quiz.availableFrom) {
       console.log("availableFrom:", quiz.availableFrom);
       if (now < new Date(quiz.availableFrom)) {
@@ -101,7 +89,6 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
       }
     }
 
-    // --- Access Code check ---
     console.log("Quiz accessCode:", quiz.accessCode);
     console.log("User provided accessCode:", req.body.accessCode);
 
@@ -112,7 +99,6 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
       }
     }
 
-    // --- Attempt restrictions ---
     const lastAttempt = await dao.findLastAttemptForStudent(
       req.params.quizId,
       currentUser._id
@@ -149,10 +135,6 @@ app.post("/api/quizzes/:quizId/copy", async (req, res) => {
     res.json(status);
   });
 
-  // -------------------------------------------
-  // Get last attempt of current student
-  // -------------------------------------------
-  // Get last attempt of current student
 app.get("/api/quizzes/:quizId/attempts/me", async (req, res) => {
   const currentUser = req.session["currentUser"];
   if (!currentUser) return res.sendStatus(401);
@@ -166,7 +148,6 @@ app.get("/api/quizzes/:quizId/attempts/me", async (req, res) => {
     return res.json(null);
   }
 
-  // DAO already returns the attempt directly
   return res.json(result[0]);
 });
 

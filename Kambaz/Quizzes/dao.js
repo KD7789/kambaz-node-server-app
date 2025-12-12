@@ -20,14 +20,13 @@ export default function QuizzesDao(db) {
       attempts: [],
       questions: [],
   
-      // ADD THESE DEFAULTS
       multipleAttempts: false,
       howManyAttempts: 1,
   
       availableFrom: null,
       availableUntil: null,
   
-      accessCode: "", // default no access code
+      accessCode: "", 
     });
   }
 
@@ -45,7 +44,7 @@ export default function QuizzesDao(db) {
   
 
   function updateQuiz(quizId, quiz) {
-    const { _id, ...rest } = quiz;   // remove _id
+    const { _id, ...rest } = quiz;   
     return model.updateOne({ _id: quizId }, { $set: rest });
   }
   
@@ -65,9 +64,6 @@ export default function QuizzesDao(db) {
     );
   }
 
-  /* -------------------------------------------------
-     Add Attempt with proper validation
-  --------------------------------------------------- */
   async function addAttempt(quizId, attempt) {
     const quiz = await model.findById(quizId).lean();
     if (!quiz) return null;
@@ -93,9 +89,6 @@ export default function QuizzesDao(db) {
     );
   }
 
-  /* -------------------------------------------------
-     Scoring Logic
-  --------------------------------------------------- */
   function computeScore(quiz, answers) {
     let score = 0;
 
@@ -127,9 +120,6 @@ export default function QuizzesDao(db) {
     return score;
   }
 
-  /* -------------------------------------------------
-     Find last attempt
-  --------------------------------------------------- */
   function findLastAttemptForStudent(quizId, studentId) {
     return model.aggregate([
       { $match: { _id: quizId } },
@@ -137,7 +127,7 @@ export default function QuizzesDao(db) {
       { $match: { "attempts.student": studentId } },
       { $sort: { "attempts.attemptNumber": -1 } },
       { $limit: 1 },
-      { $replaceRoot: { newRoot: "$attempts" } },  // <-- IMPORTANT FIX
+      { $replaceRoot: { newRoot: "$attempts" } }, 
     ]);
   }  
 

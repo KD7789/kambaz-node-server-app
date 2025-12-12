@@ -19,7 +19,7 @@ const questionSchema = new mongoose.Schema(
     },
     title: String,
     points: { type: Number, default: 1 },
-    text: String, // WYSIWYG HTML
+    text: String, 
     choices: [choiceSchema],
     correctBoolean: Boolean,
     acceptableAnswers: [String],
@@ -89,7 +89,6 @@ const quizSchema = new mongoose.Schema(
 
     questions: [questionSchema],
 
-    // REQUIRED FIX
     attempts: { type: [attemptSchema], default: [] },
   },
   { collection: "quizzes" }
